@@ -1,0 +1,25 @@
+extends layout
+
+block content
+
+  h1 #{title}: #{bookinstance._id}
+  p #[strong Title: ] #{bookinstance.book.title}
+  p #[strong Status: ]
+    if bookinstance.status=='Available'
+      span.text-success #{bookinstance.status}
+    else if bookinstance.status=='Maintenance'
+      span.text-danger #{bookinstance.status}
+    else
+      span.text-warning #{bookinstance.status}
+
+    hr
+    if ((bookinstance.status == "Loaned") || (bookinstance.status == "Reserved"))
+        p A Book instance cannot be deleted while it is Loaned or Reserved
+    else
+        p Do you really want to delete this bookinstance?
+
+        form(method='POST')
+            div.form-group
+                input#bookinstanceid.form-control(type='hidden', name='bookinstanceid', value=bookinstance._id )
+
+            button.btn.btn-primary(type='submit') Delete
