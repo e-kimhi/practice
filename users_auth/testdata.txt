@@ -1,0 +1,11 @@
+user: User1
+email: User1@mymail.com
+PW: jfdrtdbsgteG6r$
+
+user: User2
+email: User2@mymail.com
+PW: jfdrtdbsgteG6r2
+
+user: User3
+email: User3@mymail.com
+PW: jfdrtdbsgteG6r3
