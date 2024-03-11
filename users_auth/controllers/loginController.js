@@ -2,6 +2,7 @@ const User = require("../models/user");
 var bcrypt = require('bcrypt')
 var { body, validationResult } = require("express-validator")
 var asyncHandler = require("express-async-handler")
+var {createAuthToken} = require("./service_functions")
 
 
 exports.login_get = (req, res, next) => {
@@ -56,10 +57,12 @@ exports.login_post = [
                         
                         const verified = await verifyUser(user)
                         if(verified){
+                            const token = createAuthToken(user);
                             //res.redirect('/users').message("user login successfully");
                             res.render("user_home", {
                                 title: "User Home Page",
                                 message: "user login successfully",
+                                token: token,
                             })
                         }
                         else{

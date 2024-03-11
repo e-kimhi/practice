@@ -4,5 +4,12 @@ block content
   h1= title
   p Welcome to #[em User Home Page]
 
-  h2= message
+  if message
+    hr
+    h3= message
+
+  if token
+    hr
+    p token:  
+    span=token 
 
