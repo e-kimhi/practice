@@ -5,7 +5,11 @@ var login_controller = require("../controllers/loginController");
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  res.send('users home');
+  // res.send('users home');
+  res.render("user_home", {
+    title: "User Home Page",
+    message: "",
+  })
 });
 
 router.get('/login',login_controller.login_get);

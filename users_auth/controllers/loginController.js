@@ -56,7 +56,11 @@ exports.login_post = [
                         
                         const verified = await verifyUser(user)
                         if(verified){
-                            res.redirect('/users').message("user login successfully");
+                            //res.redirect('/users').message("user login successfully");
+                            res.render("user_home", {
+                                title: "User Home Page",
+                                message: "user login successfully",
+                            })
                         }
                         else{
                             user.password = '';
