@@ -1,7 +1,9 @@
 const User = require("../models/user");
+const {vuser} = require("../models/user");
 var bcrypt = require('bcrypt')
 var { body, validationResult } = require("express-validator")
 var asyncHandler = require("express-async-handler")
+var {createAuthToken} = require("./service_functions")
 
 
 exports.login_get = (req, res, next) => {
@@ -45,7 +47,7 @@ exports.login_post = [
     }else{
     
         var password = req.body.password;
-        var verified = false;
+        var foundUser = null;
 
         if(user.name.length >0 || user.email.length >0)
         {
@@ -54,9 +56,15 @@ exports.login_post = [
                     try {
                         user.password = password
                         
-                        const verified = await verifyUser(user)
-                        if(verified){
-                            res.redirect('/users').message("user login successfully");
+                        const foundUser = await verifyUser(user)
+                        if(foundUser){
+                            const token = createAuthToken(foundUser);
+                            //res.redirect('/users').message("user login successfully");
+                            res.render("user_home", {
+                                title: "User Home Page",
+                                message: "user login successfully",
+                                token: token,
+                            })
                         }
                         else{
                             user.password = '';
@@ -121,6 +129,7 @@ exports.register_post = [
         {
             try {
                 // save the user if he doesn't exist
+                var saved = false;
                 var foundUser = await userExists(user)
                 if(!foundUser){
                     const salt = await bcrypt.genSalt(10)
@@ -128,11 +137,21 @@ exports.register_post = [
                     user.password = en_password
                     user.salt = salt
 
-                    await user.save();
-                    // Redirect to new author record.
-                    res.redirect('/users').message("user registered successfully");
+                    if(vuser(user))
+                    {
+                        await user.save();
+                        saved = true;
+                        // Redirect to new author record.
+                        res.render("user_home", {
+                            title: "User Home Page",
+                            message: "User registered Successfully",
+                          })
+                    }
                    
-                } else {
+                } 
+                
+                if(!saved){
+                
                     user.password = ''
                     user.salt = ''
                     var msg = "user already exists"
@@ -141,8 +160,9 @@ exports.register_post = [
                         title: "Register",
                         user: user,
                         message: msg,
-                    });                    
-                }
+                        });    
+                }                
+                
             } catch (err) {
                 return res.status(400).json({ message: err.message })
             }
@@ -173,10 +193,10 @@ async function verifyUser(user)   {
         if(foundUser != null){
             var newPW = await bcrypt.hash(user.password, foundUser.salt)
             if(newPW === foundUser.password)
-                return true
+                return foundUser;
         }
         
-        return false
+        return null;
     }
 }
 

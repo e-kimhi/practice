@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #[em User Home Page]
+
+  if message
+    hr
+    h3= message
+
+  if token
+    hr
+    p token:  
+    span=token 
+
