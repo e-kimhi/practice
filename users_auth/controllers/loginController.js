@@ -47,7 +47,7 @@ exports.login_post = [
     }else{
     
         var password = req.body.password;
-        var verified = false;
+        var foundUser = null;
 
         if(user.name.length >0 || user.email.length >0)
         {
@@ -56,9 +56,9 @@ exports.login_post = [
                     try {
                         user.password = password
                         
-                        const verified = await verifyUser(user)
-                        if(verified){
-                            const token = createAuthToken(user);
+                        const foundUser = await verifyUser(user)
+                        if(foundUser){
+                            const token = createAuthToken(foundUser);
                             //res.redirect('/users').message("user login successfully");
                             res.render("user_home", {
                                 title: "User Home Page",
@@ -193,10 +193,10 @@ async function verifyUser(user)   {
         if(foundUser != null){
             var newPW = await bcrypt.hash(user.password, foundUser.salt)
             if(newPW === foundUser.password)
-                return true
+                return foundUser;
         }
         
-        return false
+        return null;
     }
 }
 
